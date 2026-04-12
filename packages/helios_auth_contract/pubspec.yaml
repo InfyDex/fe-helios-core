@@ -1,0 +1,10 @@
+name: helios_auth_contract
+description: Abstract Helios auth facade and user models for host and feature plugins.
+version: 0.1.0
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.2
+
+dev_dependencies:
+  lints: ^5.0.0
