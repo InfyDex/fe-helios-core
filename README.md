@@ -1,6 +1,6 @@
 # Helios
 
-Modular Flutter **host** app: **Google Sign-In** → **Helios Core** (`POST /core/v1/auth/google`) → persisted **Helios JWT**. Feature modules live under `packages/` and consume `helios_auth_contract` only.
+Modular Flutter **host** app: **Google Sign-In** → **Helios Core** (`POST /core/v1/auth/google`) → persisted **Helios JWT**. The **Todo** plugin (`packages/todo`) calls the **Helios Todo** service at **`TODO_SERVICE_BASE`** with the same JWT. Feature modules use `helios_auth_contract` for identity (no `google_sign_in` in plugins).
 
 ## Requirements
 
@@ -12,9 +12,13 @@ Modular Flutter **host** app: **Google Sign-In** → **Helios Core** (`POST /cor
 
 ```bash
 flutter pub get
-flutter run --dart-define=API_BASE=https://your-core-host \
+flutter run \
+  --dart-define=API_BASE=https://your-core-host \
+  --dart-define=TODO_SERVICE_BASE=http://localhost:8081 \
   --dart-define=GOOGLE_SERVER_CLIENT_ID=YOUR_WEB_CLIENT_ID.apps.googleusercontent.com
 ```
+
+`TODO_SERVICE_BASE` is the **Todo microservice** origin (no trailing slash). Omit it only if you are not using the Todos UI yet.
 
 - **Android ID token:** Needs a **Web** OAuth client id (`.apps.googleusercontent.com`). The **Google Services** plugin writes `default_web_client_id` from **`google-services.json`** when `oauth_client` includes **`"client_type": 3`**. If your JSON has **no** Web client, add **`GOOGLE_SERVER_CLIENT_ID`** to **`android/local.properties`** (the app’s Gradle injects it only in that case—never duplicate the Firebase merge). Type **1** is Android-only and is not enough for `idToken` alone. A **HELIOS** Gradle warning appears when neither Web client nor override exists.
 - **Android:** Add your app's SHA-1/256 in the Google Cloud **Android** OAuth client. If you omit `GOOGLE_SERVER_CLIENT_ID`, the ID token audience is the Android client ID — ensure Helios Core accepts that `aud`.
@@ -25,26 +29,32 @@ flutter run --dart-define=API_BASE=https://your-core-host \
 ```bash
 flutter run -d chrome \
   --dart-define=API_BASE=https://your-core-host \
+  --dart-define=TODO_SERVICE_BASE=http://localhost:8081 \
   --dart-define=GOOGLE_WEB_CLIENT_ID=YOUR_WEB_CLIENT_ID.apps.googleusercontent.com
 ```
 
 In Google Cloud Console → **Web client** → **Authorized JavaScript origins**, add the origins you use (e.g. `http://localhost:8080`, your staging host). Flutter web dev server ports vary; add each origin you use.
 
+**CORS (Web + Todo):** The Todo service must allow the Flutter web origin (e.g. `http://localhost:xxxxx`) on **`TODO_SERVICE_BASE`**, or the browser will block requests even with a valid JWT.
+
 Build:
 
 ```bash
-flutter build web --dart-define=API_BASE=... --dart-define=GOOGLE_WEB_CLIENT_ID=...
+flutter build web \
+  --dart-define=API_BASE=... \
+  --dart-define=TODO_SERVICE_BASE=... \
+  --dart-define=GOOGLE_WEB_CLIENT_ID=...
 ```
 
 ## Defines reference
 
 | `--dart-define` | Purpose |
 |-----------------|--------|
-| `API_BASE` | Helios Core origin, **no** trailing slash (e.g. `https://api.dev.example`). |
+| `API_BASE` | **Helios Core** origin, **no** trailing slash (e.g. `https://api.dev.example`). Used for `POST /core/v1/auth/google` only. |
+| `TODO_SERVICE_BASE` | **Helios Todo** microservice origin, **no** trailing slash (e.g. `http://localhost:8081`). Used for `GET/POST/PATCH/DELETE …/todo/v1/...`. |
 | `GOOGLE_WEB_CLIENT_ID` | **Web only** — required for `google_sign_in` on Flutter web. |
 | `GOOGLE_SERVER_CLIENT_ID` | Optional — Web client ID passed as `serverClientId` on Android/iOS for ID token audience alignment. |
-| `TODO_API_BASE` | Stub only; future todo service (see `packages/todo`). |
-| `MOVIES_API_BASE` | Stub only; future movies service (see `packages/movies`). |
+| `MOVIES_API_BASE` | Stub / future movies service (see `packages/movies`). |
 
 Do **not** commit OAuth secrets; use CI/CD or local defines.
 
@@ -52,7 +62,8 @@ Do **not** commit OAuth secrets; use CI/CD or local defines.
 
 - `lib/` — host app, router, login, `HeliosAuthService`
 - `packages/helios_auth_contract/` — `HeliosAuth`, `HeliosUser`, snapshots
-- `packages/todo/`, `packages/movies/` — stub plugins (no `google_sign_in`)
+- `packages/todo/` — Todo microservice client + list/detail UI (no `google_sign_in`)
+- `packages/movies/` — stub plugin
 
 More detail: **`AGENTS.md`**.
 

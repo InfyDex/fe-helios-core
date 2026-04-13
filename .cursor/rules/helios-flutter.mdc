@@ -10,6 +10,8 @@ Read **`AGENTS.md`** at the repo root for architecture, env vars, and plugin rul
 - **Plugins never own Google Sign-In**; only the host shows the **single Google login** screen.
 - Identity tokens for APIs: **Helios JWT from Helios Core** after Google ID token exchange — not the Google access token.
 - Feature packages depend on **`helios_auth_contract`** only; the host implements `HeliosAuth` and injects it into plugin UIs/routes.
+- **Two base URLs:** **`API_BASE`** (or compile-time equivalent) is **Helios Core** (identity: `POST /core/v1/auth/google`). **`TODO_SERVICE_BASE`** is the **Helios Todo** Go microservice (`/todo/v1/...`). Do not point feature clients at Core for todo CRUD.
+- Plugins call **feature microservices** with **`Authorization: Bearer <Helios JWT>`** from `HeliosAuth.getHeliosJwt()` (or equivalent). **Never** duplicate Google login or Core auth URLs inside `packages/*` feature modules.
 
 ## Tests and verification
 

@@ -46,10 +46,20 @@ GoRouter createAppRouter({
               ),
               GoRoute(
                 path: 'todo',
-                builder: (context, state) {
-                  final helioAuth = context.read<HeliosAuthService>();
-                  return TodoStubPage(auth: helioAuth);
-                },
+                redirect: (context, state) => '/todos',
+              ),
+              GoRoute(
+                path: 'todos',
+                builder: (context, state) => const TodoListPage(),
+                routes: [
+                  GoRoute(
+                    path: ':todoId',
+                    builder: (context, state) {
+                      final id = state.pathParameters['todoId']!;
+                      return TodoDetailPage(todoId: id);
+                    },
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'movies',

@@ -36,7 +36,7 @@ Use compile-time defines, for example:
 flutter run --dart-define=API_BASE=https://api.dev.example --dart-define=GOOGLE_WEB_CLIENT_ID=xxx.apps.googleusercontent.com
 ```
 
-See `lib/core/env/helios_env.dart` for all supported defines.
+See `lib/core/env/helios_env.dart` for Core defines. Todo service base: **`packages/todo/lib/src/todo_config.dart`** (`TODO_SERVICE_BASE`).
 
 ### Google Sign-In defines
 
@@ -55,9 +55,25 @@ The host requests **`user.phonenumbers.read`** so the returned **Google ID token
 ## Modular host / plugin rules
 
 - **Host** may depend on `google_sign_in`, Helios Core HTTP client, secure storage, `go_router`, etc.
-- **Plugins** (`packages/todo`, `packages/movies`, …) depend only on **`helios_auth_contract`** for identity. They receive `HeliosAuth` via **constructor injection** from the host router (`context.read<HeliosAuthService>()` passed as `HeliosAuth`).
+- **Plugins** (`packages/todo`, `packages/movies`, …) depend only on **`helios_auth_contract`** for identity (no `google_sign_in` in feature packages). The **Todo** package uses a **`Future<String?> Function() getToken`** callback wired in **`lib/main.dart`** to `HeliosAuthService.getHeliosJwt` and `signOut` on HTTP **401**.
 - **Exactly one** login screen; **Google only** in this phase.
 - Helios JWT exists **only** after a successful Core exchange, not from Google alone.
+
+## Helios Core vs Helios Todo (two backends)
+
+| | **Helios Core** | **Helios Todo** (Go microservice) |
+|---|-----------------|-------------------------------------|
+| **Purpose** | Identity: Google ID token → Helios JWT + user | Todo CRUD |
+| **Base URL define** | `API_BASE` (`HeliosEnv`) | `TODO_SERVICE_BASE` (`TodoConfig`) |
+| **Example** | `http://192.168.1.5:8080` | `http://localhost:8081` |
+| **Auth** | `POST {API_BASE}/core/v1/auth/google` (host only) | Every request: `Authorization: Bearer <Helios JWT>` |
+| **API prefix** | `/core/v1/...` | `/todo/v1/...` (e.g. `GET {TODO_SERVICE_BASE}/todo/v1/todos`) |
+
+**Web:** Configure the Todo service **CORS** to allow your Flutter web origin (scheme + host + port). Core and Todo may run on different ports/origins.
+
+### Todo UI routes (host shell)
+
+Authenticated shell (`go_router`): **`/todos`** list, **`/todos/:todoId`** detail (todo passed via `extra`). Legacy **`/todo`** redirects to **`/todos`**. Drawer entry: **Todos**.
 
 ## Tests
 
@@ -77,17 +93,17 @@ lib/
     presentation/login_page.dart
   shell/home_shell.dart
 packages/helios_auth_contract/        # HeliosAuth + HeliosUser + snapshots
-packages/todo/                          # stub feature
+packages/todo/                          # TodoApiClient, TodoRepository, list/detail UI
 packages/movies/                        # stub feature
 ```
 
 ## How plugins obtain the Helios JWT
 
-1. Hold a reference to `HeliosAuth` (interface from `helios_auth_contract`).
-2. Before calling a feature microservice, `await auth.getHeliosJwt()` and set header `Authorization: Bearer <jwt>` if non-null.
-3. Listen to `auth.authStateStream` (or host-driven navigation) to react to sign-out.
+1. Hold a reference to `HeliosAuth` (interface from `helios_auth_contract`) **or** a narrow callback the host registers (e.g. `getToken: auth.getHeliosJwt`).
+2. Before each feature API call, obtain the token and send **`Authorization: Bearer <jwt>`**. If the token is null, treat as signed-out (Todo UI redirects to `/login`).
+3. On **401**, the Todo client invokes the host **`onUnauthorized`** (currently `HeliosAuthService.signOut`); `go_router` then sends the user to login.
 
-The stub todo page includes a **demo button** that reads the JWT length for wiring checks.
+The **`packages/todo`** `TodoApiClient` centralizes Bearer injection; the host must pass **`TODO_SERVICE_BASE`** at compile time for real calls.
 
 ## Web secure storage tradeoffs
 

@@ -45,7 +45,7 @@ class HomeShellPage extends StatelessWidget {
             case 0:
               context.go('/home');
             case 1:
-              context.go('/todo');
+              context.go('/todos');
             case 2:
               context.go('/movies');
           }
@@ -59,7 +59,7 @@ class HomeShellPage extends StatelessWidget {
           NavigationDrawerDestination(
             icon: Icon(Icons.checklist_outlined),
             selectedIcon: Icon(Icons.checklist),
-            label: Text('Todo (stub)'),
+            label: Text('Todos'),
           ),
           NavigationDrawerDestination(
             icon: Icon(Icons.movie_outlined),
@@ -73,7 +73,7 @@ class HomeShellPage extends StatelessWidget {
   }
 
   static int _indexForLocation(String path) {
-    if (path.startsWith('/todo')) return 1;
+    if (path.startsWith('/todos')) return 1;
     if (path.startsWith('/movies')) return 2;
     return 0;
   }
@@ -96,8 +96,8 @@ class HomeOverviewPage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          'You are signed in with Helios Core. Open the menu to try the stub '
-          'todo plugin route.',
+          'You are signed in with Helios Core. Open the menu for Todos '
+          '(Helios Todo microservice) or Movies (stub).',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],

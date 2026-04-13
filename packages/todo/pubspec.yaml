@@ -1,7 +1,7 @@
 name: todo
-description: Stub todo feature module for Helios — depends only on helios_auth_contract.
+description: Helios Todo feature — Helios Todo microservice client; no Google Sign-In.
 version: 0.1.0
-publish_to: "none"
+publish_to: 'none'
 
 environment:
   sdk: ^3.9.2
@@ -9,8 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  go_router: ^14.6.2
   helios_auth_contract:
     path: ../helios_auth_contract
+  http: ^1.2.2
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_lints: ^5.0.0
