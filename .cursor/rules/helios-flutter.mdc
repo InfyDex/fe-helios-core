@@ -1,0 +1,12 @@
+---
+description: Helios Flutter host — modular auth, Google-only login, Helios Core JWT.
+alwaysApply: true
+---
+
+# Helios Flutter
+
+Read **`AGENTS.md`** at the repo root for architecture, env vars, and plugin rules.
+
+- **Plugins never own Google Sign-In**; only the host shows the **single Google login** screen.
+- Identity tokens for APIs: **Helios JWT from Helios Core** after Google ID token exchange — not the Google access token.
+- Feature packages depend on **`helios_auth_contract`** only; the host implements `HeliosAuth` and injects it into plugin UIs/routes.

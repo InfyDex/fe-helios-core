@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "68968889830",
+    "project_id": "helios-82585",
+    "storage_bucket": "helios-82585.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68968889830:android:900ba2c67d3d581f0f6a27",
+        "android_client_info": {
+          "package_name": "com.infydex.helios"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "68968889830-bqsc2s8jqvnqdsfj7jrujaahgd26rtno.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.infydex.helios",
+            "certificate_hash": "4f901f93c8dc65bbedacb5ada26623f1157fb7ef"
+          }
+        },
+        {
+          "client_id": "68968889830-o3tcp1obvd19eb7gvqk7bhcb6mq18qlp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDGuULv2xbGYJxDvEZZM1VJU_gFKbdrhs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68968889830-o3tcp1obvd19eb7gvqk7bhcb6mq18qlp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

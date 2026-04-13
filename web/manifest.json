@@ -1,11 +1,11 @@
 {
-    "name": "helios",
-    "short_name": "helios",
+    "name": "Helios",
+    "short_name": "Helios",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Helios modular host app",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

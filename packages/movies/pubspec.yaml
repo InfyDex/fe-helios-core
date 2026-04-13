@@ -1,0 +1,21 @@
+name: movies
+description: Stub movies feature module for Helios — depends only on helios_auth_contract.
+version: 0.1.0
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  helios_auth_contract:
+    path: ../helios_auth_contract
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
