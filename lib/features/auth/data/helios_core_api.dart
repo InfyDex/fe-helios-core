@@ -1,24 +1,49 @@
 import 'dart:convert';
 
+import 'package:helios_auth_contract/helios_auth_contract.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../core/env/helios_env.dart';
-import 'package:helios_auth_contract/helios_auth_contract.dart';
 
 /// Helios Core HTTP client (identity only).
 class HeliosCoreApi {
-  HeliosCoreApi({http.Client? httpClient}) : _client = httpClient ?? http.Client();
+  HeliosCoreApi({
+    http.Client? httpClient,
+    /// When set (non-empty after trim), used instead of [HeliosEnv.apiBase] for
+    /// requests and [HeliosEnv.hasApiBase] checks (e.g. unit tests).
+    String? apiBaseOverride,
+  })  : _client = httpClient ?? http.Client(),
+        _apiBaseOverride = _trimmedOrNull(apiBaseOverride);
 
   final http.Client _client;
+  final String? _apiBaseOverride;
+
+  static String? _trimmedOrNull(String? value) {
+    if (value == null) return null;
+    final t = value.trim();
+    return t.isEmpty ? null : t;
+  }
+
+  bool get _hasApiBase =>
+      _apiBaseOverride != null || HeliosEnv.hasApiBase;
+
+  Uri _uri(String path) => Uri.parse(_apiUrl(path));
+
+  String _apiUrl(String path) {
+    if (_apiBaseOverride != null) {
+      return HeliosEnv.joinApiBaseAndPath(_apiBaseOverride, path);
+    }
+    return HeliosEnv.apiUrl(path);
+  }
 
   /// `POST /core/v1/auth/google` with Google ID token.
   Future<HeliosAuthExchangeResult> exchangeGoogleIdToken(String idToken) async {
-    if (!HeliosEnv.hasApiBase) {
+    if (!_hasApiBase) {
       return HeliosAuthExchangeResult.failure(
         'API_BASE is not set. Run with --dart-define=API_BASE=https://your-host',
       );
     }
-    final uri = Uri.parse(HeliosEnv.apiUrl('/core/v1/auth/google'));
+    final uri = _uri('/core/v1/auth/google');
     try {
       final res = await _client.post(
         uri,
@@ -48,8 +73,8 @@ class HeliosCoreApi {
 
   /// Optional connectivity probe: `GET /core/v1/health`.
   Future<bool> healthOk() async {
-    if (!HeliosEnv.hasApiBase) return false;
-    final uri = Uri.parse(HeliosEnv.apiUrl('/core/v1/health'));
+    if (!_hasApiBase) return false;
+    final uri = _uri('/core/v1/health');
     try {
       final res = await _client.get(uri);
       return res.statusCode >= 200 && res.statusCode < 300;
@@ -71,7 +96,7 @@ class HeliosAuthExchangeResult {
   final String? error;
 
   bool get isSuccess =>
-      user != null && token != null && token!.isNotEmpty && error == null;
+      user != null && (token?.isNotEmpty ?? false) && error == null;
 
   factory HeliosAuthExchangeResult.ok({
     required HeliosUser user,

@@ -63,6 +63,8 @@ flutter analyze
 flutter test
 ```
 
+After substantive changes, run **both** above until clean (see `.cursor/rules/helios-flutter.mdc`). Integration-style checks (Google Sign-In, secure storage) remain manual or device tests; HTTP and URL logic are covered in `test/`.
+
 ## GCP reminders
 
 1. Create **OAuth 2.0 Client IDs** for Web, Android, and iOS in the same GCP project.

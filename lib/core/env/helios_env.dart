@@ -41,11 +41,14 @@ class HeliosEnv {
     return v;
   }
 
-  static String apiUrl(String path) {
-    final base = apiBase.trim().replaceAll(RegExp(r'/+$'), '');
+  /// Joins a base URL (trailing slashes stripped) with [path] (leading `/` optional).
+  static String joinApiBaseAndPath(String base, String path) {
+    final b = base.trim().replaceAll(RegExp(r'/+$'), '');
     final p = path.startsWith('/') ? path : '/$path';
-    return '$base$p';
+    return '$b$p';
   }
+
+  static String apiUrl(String path) => joinApiBaseAndPath(apiBase, path);
 
   static void assertWebClientConfigured() {
     if (kIsWeb && !hasApiBase) {

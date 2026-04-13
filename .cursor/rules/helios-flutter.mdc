@@ -10,3 +10,8 @@ Read **`AGENTS.md`** at the repo root for architecture, env vars, and plugin rul
 - **Plugins never own Google Sign-In**; only the host shows the **single Google login** screen.
 - Identity tokens for APIs: **Helios JWT from Helios Core** after Google ID token exchange — not the Google access token.
 - Feature packages depend on **`helios_auth_contract`** only; the host implements `HeliosAuth` and injects it into plugin UIs/routes.
+
+## Tests and verification
+
+- Add or extend **automated tests** whenever behavior is non-trivial or regressions would hurt (parsers, HTTP clients, auth contract models, URL helpers, routing guards, etc.). Prefer **fast unit tests** with mocks (`http` `MockClient`, fakes) over flaky device-only checks when possible.
+- After **any** meaningful code change, run **`flutter test`** and **`flutter analyze`** from the repo root and fix failures before considering the work done.

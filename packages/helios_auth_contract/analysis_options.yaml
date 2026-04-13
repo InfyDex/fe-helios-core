@@ -1,1 +1,12 @@
 include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - build/**
+
+linter:
+  rules:
+    always_declare_return_types: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    require_trailing_commas: true

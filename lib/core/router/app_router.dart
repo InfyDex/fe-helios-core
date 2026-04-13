@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:movies/movies.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/todo.dart';
 
 import '../../features/auth/helios_auth_service.dart';

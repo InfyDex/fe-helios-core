@@ -59,6 +59,10 @@ The host requests **`user.phonenumbers.read`** so the returned **Google ID token
 - **Exactly one** login screen; **Google only** in this phase.
 - Helios JWT exists **only** after a successful Core exchange, not from Google alone.
 
+## Tests
+
+From the repo root: **`flutter test`** (unit tests under `test/`) and **`flutter analyze`**. `HeliosCoreApi` supports `apiBaseOverride` + an injected `http.Client` for mocked exchanges. See **`.cursor/rules/helios-flutter.mdc`** for agent expectations after edits.
+
 ## Folder map (indicative)
 
 ```
